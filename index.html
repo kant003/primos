@@ -45,6 +45,33 @@
       font-size: 1.05rem;
     }
 
+    figure {
+      margin: 0 0 32px;
+      text-align: center;
+    }
+
+    figure canvas {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 2px 12px rgba(31, 46, 70, 0.08);
+    }
+
+    figcaption {
+      margin-top: 12px;
+      font-size: 0.85rem;
+      color: #7b8794;
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      vertical-align: middle;
+    }
+
     ol {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
@@ -92,6 +119,13 @@
   <main>
     <h1>100 primeros numeros primos</h1>
     <p>Lista generada automaticamente con JavaScript.</p>
+    <figure>
+      <canvas id="prime-spiral" role="img" aria-label="Espiral de Ulam de los primeros 100 números primos"></canvas>
+      <figcaption>
+        Espiral de Ulam — Los puntos <span class="legend-dot" style="background:#0d5bd7;"></span> azules son números primos,
+        los puntos <span class="legend-dot" style="background:#dbe4ef;"></span> grises no lo son.
+      </figcaption>
+    </figure>
     <ol id="prime-list" aria-label="Lista de los 100 primeros numeros primos"></ol>
   </main>
 
@@ -132,6 +166,68 @@
       item.textContent = prime;
       primeList.appendChild(item);
     });
+
+    const canvas = document.getElementById('prime-spiral');
+    const dpr = window.devicePixelRatio || 1;
+    const displaySize = Math.min(480, canvas.parentElement.clientWidth);
+    canvas.width = displaySize * dpr;
+    canvas.height = displaySize * dpr;
+    canvas.style.width = displaySize + 'px';
+    canvas.style.height = displaySize + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    const maxNum = 541;
+    const coords = new Array(maxNum + 1);
+    let x = 0, y = 0;
+    coords[1] = { x: 0, y: 0 };
+    let step = 1, dir = 0, num = 2;
+
+    while (num <= maxNum) {
+      for (let side = 0; side < 2 && num <= maxNum; side++) {
+        for (let i = 0; i < step && num <= maxNum; i++) {
+          if (dir === 0) x++;
+          else if (dir === 1) y--;
+          else if (dir === 2) x--;
+          else y++;
+          coords[num] = { x, y };
+          num++;
+        }
+        dir = (dir + 1) % 4;
+      }
+      step++;
+    }
+
+    let minX = 0, maxX = 0, minY = 0, maxY = 0;
+    for (let n = 1; n <= maxNum; n++) {
+      minX = Math.min(minX, coords[n].x);
+      maxX = Math.max(maxX, coords[n].x);
+      minY = Math.min(minY, coords[n].y);
+      maxY = Math.max(maxY, coords[n].y);
+    }
+
+    const cols = maxX - minX + 1;
+    const rows = maxY - minY + 1;
+    const cellSize = Math.min(displaySize / cols, displaySize / rows);
+    const offsetX = (displaySize - cellSize * cols) / 2;
+    const offsetY = (displaySize - cellSize * rows) / 2;
+
+    for (let n = 1; n <= maxNum; n++) {
+      const cx = offsetX + (coords[n].x - minX) * cellSize + cellSize / 2;
+      const cy = offsetY + (coords[n].y - minY) * cellSize + cellSize / 2;
+
+      if (isPrime(n)) {
+        ctx.fillStyle = '#0d5bd7';
+        ctx.beginPath();
+        ctx.arc(cx, cy, cellSize * 0.38, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = '#dbe4ef';
+        ctx.beginPath();
+        ctx.arc(cx, cy, cellSize * 0.12, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
   </script>
 </body>
 </html>
