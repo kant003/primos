@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>100 primeros numeros primos</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #1d2733;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    main {
+      width: min(960px, 100%);
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(31, 46, 70, 0.14);
+      padding: 32px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1;
+    }
+
+    p {
+      margin: 0 0 28px;
+      color: #5b6673;
+      font-size: 1.05rem;
+    }
+
+    ol {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: prime;
+    }
+
+    li {
+      counter-increment: prime;
+      display: grid;
+      gap: 6px;
+      padding: 14px 10px;
+      border: 1px solid #dbe4ef;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff, #f8fbff);
+      text-align: center;
+      font-weight: 700;
+      color: #0d5bd7;
+    }
+
+    li::before {
+      content: counter(prime);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #7b8794;
+    }
+
+    @media (max-width: 560px) {
+      main {
+        padding: 24px 18px;
+        border-radius: 18px;
+      }
+
+      ol {
+        grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>100 primeros numeros primos</h1>
+    <p>Lista generada automaticamente con JavaScript.</p>
+    <ol id="prime-list" aria-label="Lista de los 100 primeros numeros primos"></ol>
+  </main>
+
+  <script>
+    const primeList = document.querySelector('#prime-list');
+
+    function isPrime(number) {
+      if (number < 2) {
+        return false;
+      }
+
+      for (let divisor = 2; divisor <= Math.sqrt(number); divisor += 1) {
+        if (number % divisor === 0) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    function getFirstPrimes(total) {
+      const primes = [];
+      let candidate = 2;
+
+      while (primes.length < total) {
+        if (isPrime(candidate)) {
+          primes.push(candidate);
+        }
+
+        candidate += 1;
+      }
+
+      return primes;
+    }
+
+    getFirstPrimes(100).forEach((prime) => {
+      const item = document.createElement('li');
+      item.textContent = prime;
+      primeList.appendChild(item);
+    });
+  </script>
+</body>
+</html>
